@@ -30,9 +30,11 @@ export default class WarLogCommand extends Command {
 				url: `https://link.clashofclans.com/en?action=OpenClanProfile&tag=${encodeURIComponent(data.tag)}`
 			})
 			.setDescription(
-				[`${data.warWins} Wins, ${data.isWarLogPublic ? `${data.warLosses!} Losses,` : ''} ${data.warWinStreak} Win Streak`].join(
-					'\n'
-				)
+				[
+					`${data.warWins} Wins, ${data.isWarLogPublic ? `${data.warLosses!} Losses,` : ''} ${
+						data.warWinStreak
+					} Win Streak`
+				].join('\n')
 			);
 
 		if (!data.isWarLogPublic) {
@@ -66,14 +68,16 @@ export default class WarLogCommand extends Command {
 						extra ? `\u200e(#${extra.id as string})` : ''
 					}`,
 					value: [
-						`${EMOJIS.STAR} \`\u200e${this.padStart(clan.stars)} / ${this.padEnd(opponent.stars)}\u200f\`\u200e ${
-							EMOJIS.FIRE
-						} ${(clan.destructionPercentage || 0).toFixed(2)}% ${
+						`${EMOJIS.STAR} \`\u200e${this.padStart(clan.stars)} / ${this.padEnd(
+							opponent.stars
+						)}\u200f\`\u200e ${EMOJIS.FIRE} ${(clan.destructionPercentage || 0).toFixed(2)}% ${
 							opponent.name ? `/ ${(opponent.destructionPercentage || 0).toFixed(2)}%` : ''
 						}`,
-						`${EMOJIS.USERS} \`\u200e${this.padStart(item.teamSize)} / ${this.padEnd(item.teamSize)}\u200f\`\u200e ${
-							EMOJIS.SWORD
-						} ${clan.attacks}${extra ? ` / ${extra.attacks as string}` : ''} ${EMOJIS.CLOCK} ${time} ago`
+						`${EMOJIS.USERS} \`\u200e${this.padStart(item.teamSize)} / ${this.padEnd(
+							item.teamSize
+						)}\u200f\`\u200e ${EMOJIS.SWORD} ${clan.attacks}${
+							extra ? ` / ${extra.attacks as string}` : ''
+						} ${EMOJIS.CLOCK} ${time} ago`
 					].join('\n')
 				}
 			]);
@@ -85,7 +89,9 @@ export default class WarLogCommand extends Command {
 	private getWarInfo(wars: any[], war: any) {
 		const data = wars.find(
 			(en) =>
-				war.opponent?.tag && [en.clan.tag, en.opponent.tag].includes(war.opponent.tag) && this.compareDate(war.endTime, en.endTime)
+				war.opponent?.tag &&
+				[en.clan.tag, en.opponent.tag].includes(war.opponent.tag) &&
+				this.compareDate(war.endTime, en.endTime)
 		);
 		if (!data) return null;
 		return { id: data.id, attacks: data.opponent.attacks };

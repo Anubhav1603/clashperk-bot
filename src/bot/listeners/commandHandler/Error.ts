@@ -1,6 +1,13 @@
 import { inspect } from 'node:util';
 import { addBreadcrumb, captureException, setContext } from '@sentry/node';
-import { DiscordAPIError, ActionRowBuilder, ButtonBuilder, MessageComponentInteraction, ButtonStyle, CommandInteraction } from 'discord.js';
+import {
+	DiscordAPIError,
+	ActionRowBuilder,
+	ButtonBuilder,
+	MessageComponentInteraction,
+	ButtonStyle,
+	CommandInteraction
+} from 'discord.js';
 import { Listener, Command } from '../../lib/index.js';
 
 export default class ErrorListener extends Listener {
@@ -13,7 +20,9 @@ export default class ErrorListener extends Listener {
 	}
 
 	public async exec(error: Error, interaction: MessageComponentInteraction | CommandInteraction, command?: Command) {
-		const label = interaction.guild ? `${interaction.guild.name}/${interaction.user.tag}` : `${interaction.user.tag}`;
+		const label = interaction.guild
+			? `${interaction.guild.name}/${interaction.user.tag}`
+			: `${interaction.user.tag}`;
 		// eslint-disable-next-line @typescript-eslint/no-base-to-string
 		this.client.logger.error(`${command?.id ?? 'unknown'} ~ ${error.toString()}`, { label });
 		console.error(inspect(error, { depth: Infinity }));

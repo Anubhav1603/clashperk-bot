@@ -22,7 +22,9 @@ export default class CommandBlockedListener extends Listener {
 
 	public exec(interaction: CommandInteraction, command: Command, reason: string) {
 		const content = texts[reason];
-		const label = interaction.guild ? `${interaction.guild.name}/${interaction.user.tag}` : `${interaction.user.tag}`;
+		const label = interaction.guild
+			? `${interaction.guild.name}/${interaction.user.tag}`
+			: `${interaction.user.tag}`;
 		this.client.logger.log(`${command.id} ~ ${reason}`, { label });
 
 		if (!interaction.inCachedGuild() && interaction.inGuild()) {

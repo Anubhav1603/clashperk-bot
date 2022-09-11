@@ -18,7 +18,9 @@ export default class TrophiesCommand extends Command {
 		const clan = await this.client.resolver.resolveClan(interaction, args.tag);
 		if (!clan) return;
 		if (clan.members < 1) {
-			return interaction.editReply(this.i18n('common.no_clan_members', { lng: interaction.locale, clan: clan.name }));
+			return interaction.editReply(
+				this.i18n('common.no_clan_members', { lng: interaction.locale, clan: clan.name })
+			);
 		}
 
 		const embed = new EmbedBuilder()

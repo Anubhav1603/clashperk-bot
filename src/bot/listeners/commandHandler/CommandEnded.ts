@@ -12,7 +12,11 @@ export default class CommandEndedListener extends Listener {
 		});
 	}
 
-	public async exec(interaction: MessageComponentInteraction | CommandInteraction, _command: Command, _args: unknown) {
+	public async exec(
+		interaction: MessageComponentInteraction | CommandInteraction,
+		_command: Command,
+		_args: unknown
+	) {
 		const suggested = false;
 		// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 		if (!suggested) {

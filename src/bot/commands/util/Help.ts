@@ -63,7 +63,12 @@ export default class HelpCommand extends Command {
 		if (description.examples.length) {
 			const cmd = `/${command.name ?? command.id}`;
 			embed.setDescription(
-				[embed.data.description, '', '**Examples**', `\`${cmd} ${description.examples.join(`\`\n\`${cmd} `)}\``].join('\n')
+				[
+					embed.data.description,
+					'',
+					'**Examples**',
+					`\`${cmd} ${description.examples.join(`\`\n\`${cmd} `)}\``
+				].join('\n')
 			);
 		}
 
@@ -107,19 +112,22 @@ export default class HelpCommand extends Command {
 			.setDescription(`To view more details for a command, do \`/help command: query\``);
 
 		const categories = Object.values(
-			this.handler.modules.reduce<Record<string, { category: string; commands: Command[] }>>((commands, command) => {
-				if (command.category in option) {
-					// eslint-disable-next-line
+			this.handler.modules.reduce<Record<string, { category: string; commands: Command[] }>>(
+				(commands, command) => {
+					if (command.category in option) {
+						// eslint-disable-next-line
 					if (!commands[command.category]) {
-						commands[command.category] = {
-							commands: [],
-							category: option[command.category as keyof typeof option]
-						};
+							commands[command.category] = {
+								commands: [],
+								category: option[command.category as keyof typeof option]
+							};
+						}
+						commands[command.category].commands.push(command);
 					}
-					commands[command.category].commands.push(command);
-				}
-				return commands;
-			}, {})
+					return commands;
+				},
+				{}
+			)
 		);
 
 		const fields = Object.values(option);

@@ -1,4 +1,11 @@
-import { EmbedBuilder, CommandInteraction, ButtonBuilder, ActionRowBuilder, escapeMarkdown, ButtonStyle } from 'discord.js';
+import {
+	EmbedBuilder,
+	CommandInteraction,
+	ButtonBuilder,
+	ActionRowBuilder,
+	escapeMarkdown,
+	ButtonStyle
+} from 'discord.js';
 import { Clan } from 'clashofclans.js';
 import { EMOJIS, CWL_LEAGUES, CLAN_LABELS } from '../../util/Emojis.js';
 import { Command } from '../../lib/index.js';
@@ -90,7 +97,11 @@ export default class ClanCommand extends Command {
 			}
 		]);
 
-		const [action, season, wars] = await Promise.all([this.getActivity(clan), this.getSeason(clan), this.getWars(clan.tag)]);
+		const [action, season, wars] = await Promise.all([
+			this.getActivity(clan),
+			this.getSeason(clan),
+			this.getWars(clan.tag)
+		]);
 		const fields = [];
 		if (action) {
 			fields.push(
@@ -115,10 +126,16 @@ export default class ClanCommand extends Command {
 			const won = wars.filter((war) => war.result).length;
 			const lost = wars.filter((war) => !war.result).length;
 			fields.push(
-				...['**Total Wars**', `${EMOJIS.CROSS_SWORD} ${wars.length} Wars ${EMOJIS.OK} ${won} Won ${EMOJIS.WRONG} ${lost} Lost`]
+				...[
+					'**Total Wars**',
+					`${EMOJIS.CROSS_SWORD} ${wars.length} Wars ${EMOJIS.OK} ${won} Won ${EMOJIS.WRONG} ${lost} Lost`
+				]
 			);
 		}
-		if (fields.length) embed.addFields([{ name: `**Season Stats (${Season.previousID})**`, value: [...fields, '\u200e'].join('\n') }]);
+		if (fields.length)
+			embed.addFields([
+				{ name: `**Season Stats (${Season.previousID})**`, value: [...fields, '\u200e'].join('\n') }
+			]);
 
 		embed.addFields([
 			{
@@ -128,7 +145,9 @@ export default class ClanCommand extends Command {
 					`${clan.isWarLogPublic ? '🔓 Public' : '🔒 Private'}`,
 					'**War Performance**',
 					`${EMOJIS.OK} ${clan.warWins} Won ${
-						clan.isWarLogPublic ? `${EMOJIS.WRONG} ${clan.warLosses!} Lost ${EMOJIS.EMPTY} ${clan.warTies!} Tied` : ''
+						clan.isWarLogPublic
+							? `${EMOJIS.WRONG} ${clan.warLosses!} Lost ${EMOJIS.EMPTY} ${clan.warTies!} Tied`
+							: ''
 					}`,
 					'**Win Streak**',
 					`${'🏅'} ${clan.warWinStreak}`,
@@ -149,7 +168,9 @@ export default class ClanCommand extends Command {
 					.setStyle(ButtonStyle.Secondary)
 					.setCustomId(JSON.stringify({ cmd: 'clan', tag: clan.tag }))
 			)
-			.addComponents(new ButtonBuilder().setLabel('Clan Badge').setStyle(ButtonStyle.Link).setURL(clan.badgeUrls.large));
+			.addComponents(
+				new ButtonBuilder().setLabel('Clan Badge').setStyle(ButtonStyle.Link).setURL(clan.badgeUrls.large)
+			);
 		return interaction.editReply({ embeds: [embed], components: [row] });
 	}
 
@@ -322,7 +343,9 @@ export default class ClanCommand extends Command {
 										then: true
 									},
 									{
-										case: { $gt: ['$clan.destructionPercentage', '$opponent.destructionPercentage'] },
+										case: {
+											$gt: ['$clan.destructionPercentage', '$opponent.destructionPercentage']
+										},
 										then: true
 									}
 								],

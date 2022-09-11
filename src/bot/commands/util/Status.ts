@@ -46,7 +46,10 @@ export default class StatusCommand extends Command {
 		const embed = new EmbedBuilder()
 			.setColor(this.client.embed(guild.id))
 			.setTitle('Stats')
-			.setAuthor({ name: `${this.client.user!.username}`, iconURL: this.client.user!.displayAvatarURL({ extension: 'png' }) })
+			.setAuthor({
+				name: `${this.client.user!.username}`,
+				iconURL: this.client.user!.displayAvatarURL({ extension: 'png' })
+			})
 			.addFields([
 				{
 					name: 'Memory Usage',
@@ -60,7 +63,9 @@ export default class StatusCommand extends Command {
 				},
 				{
 					name: 'Uptime',
-					value: moment.duration(process.uptime() * 1000).format('D[d], H[h], m[m], s[s]', { trim: 'both mid' }),
+					value: moment
+						.duration(process.uptime() * 1000)
+						.format('D[d], H[h], m[m], s[s]', { trim: 'both mid' }),
 					inline: true
 				},
 				{
@@ -84,7 +89,10 @@ export default class StatusCommand extends Command {
 					inline: true
 				}
 			])
-			.setFooter({ text: `© ${new Date().getFullYear()} ${owner.tag}`, iconURL: owner.displayAvatarURL({ forceStatic: false }) });
+			.setFooter({
+				text: `© ${new Date().getFullYear()} ${owner.tag}`,
+				iconURL: owner.displayAvatarURL({ forceStatic: false })
+			});
 		return embed;
 	}
 

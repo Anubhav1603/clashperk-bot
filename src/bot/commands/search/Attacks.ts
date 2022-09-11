@@ -18,7 +18,9 @@ export default class ClanAttacksCommand extends Command {
 		const clan = await this.client.resolver.resolveClan(interaction, args.tag);
 		if (!clan) return;
 		if (clan.members < 1) {
-			return interaction.editReply(this.i18n('common.no_clan_members', { lng: interaction.locale, clan: clan.name }));
+			return interaction.editReply(
+				this.i18n('common.no_clan_members', { lng: interaction.locale, clan: clan.name })
+			);
 		}
 
 		const fetched = await this.client.http.detailedClanMembers(clan.memberList);
@@ -46,7 +48,9 @@ export default class ClanAttacksCommand extends Command {
 								const name = `${member.name.replace(/\`/g, '\\').padEnd(15, ' ')}`;
 								const attackWins = `${member.attackWins.toString().padStart(3, ' ')}`;
 								const defenseWins = `${member.defenseWins.toString().padStart(3, ' ')}`;
-								return `${(i + 1).toString().padStart(2, ' ')}  ${attackWins}  ${defenseWins}  \u200e${name}`;
+								return `${(i + 1)
+									.toString()
+									.padStart(2, ' ')}  ${attackWins}  ${defenseWins}  \u200e${name}`;
 							})
 							.join('\n'),
 						'```'
@@ -59,7 +63,10 @@ export default class ClanAttacksCommand extends Command {
 		const embed = getEmbed();
 
 		const customId = this.client.uuid(interaction.user.id);
-		const button = new ButtonBuilder().setCustomId(customId).setStyle(ButtonStyle.Secondary).setLabel('Sort by Defense');
+		const button = new ButtonBuilder()
+			.setCustomId(customId)
+			.setStyle(ButtonStyle.Secondary)
+			.setLabel('Sort by Defense');
 		const msg = await interaction.editReply({
 			embeds: [embed],
 			components: [new ActionRowBuilder<ButtonBuilder>({ components: [button] })]

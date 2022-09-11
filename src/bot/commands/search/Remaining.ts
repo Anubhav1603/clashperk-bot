@@ -120,7 +120,9 @@ export default class RemainingCommand extends Command {
 					embed.data.description,
 					'',
 					`**${body.attacksPerMember} ${body.state === 'inWar' ? 'Remaining' : 'Missed'} Attacks**`,
-					...TwoRem.sort((a, b) => a.mapPosition - b.mapPosition).map((m) => `\u200e${BLUE_NUMBERS[m.mapPosition]} ${m.name}`)
+					...TwoRem.sort((a, b) => a.mapPosition - b.mapPosition).map(
+						(m) => `\u200e${BLUE_NUMBERS[m.mapPosition]} ${m.name}`
+					)
 				].join('\n')
 			);
 		}
@@ -131,7 +133,9 @@ export default class RemainingCommand extends Command {
 					embed.data.description,
 					'',
 					`**1 ${body.state === 'inWar' ? 'Remaining' : 'Missed'} Attack**`,
-					...OneRem.sort((a, b) => a.mapPosition - b.mapPosition).map((m) => `\u200e${BLUE_NUMBERS[m.mapPosition]} ${m.name}`)
+					...OneRem.sort((a, b) => a.mapPosition - b.mapPosition).map(
+						(m) => `\u200e${BLUE_NUMBERS[m.mapPosition]} ${m.name}`
+					)
 				].join('\n')
 			);
 		}

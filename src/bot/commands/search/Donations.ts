@@ -39,7 +39,9 @@ export default class DonationsCommand extends Command {
 		const clan = await this.client.resolver.resolveClan(interaction, tag);
 		if (!clan) return;
 		if (clan.members < 1) {
-			return interaction.editReply(this.i18n('common.no_clan_members', { lng: interaction.locale, clan: clan.name }));
+			return interaction.editReply(
+				this.i18n('common.no_clan_members', { lng: interaction.locale, clan: clan.name })
+			);
 		}
 
 		if (!season) season = Season.ID;
@@ -52,7 +54,9 @@ export default class DonationsCommand extends Command {
 			.toArray();
 
 		if (!dbMembers.length && !sameSeason) {
-			return interaction.editReply(this.i18n('command.donations.no_season_data', { lng: interaction.locale, season }));
+			return interaction.editReply(
+				this.i18n('command.donations.no_season_data', { lng: interaction.locale, season })
+			);
 		}
 
 		const members: { tag: string; name: string; donated: number; received: number }[] = [];
@@ -117,7 +121,9 @@ export default class DonationsCommand extends Command {
 
 		const embed = getEmbed();
 		const customId = {
-			sort: sameSeason ? JSON.stringify({ tag: clan.tag, cmd: this.id, reverse: true }) : this.client.uuid(interaction.user.id),
+			sort: sameSeason
+				? JSON.stringify({ tag: clan.tag, cmd: this.id, reverse: true })
+				: this.client.uuid(interaction.user.id),
 			refresh: JSON.stringify({ tag: clan.tag, cmd: this.id, reverse: false })
 		};
 
@@ -129,7 +135,12 @@ export default class DonationsCommand extends Command {
 					.setEmoji(EMOJIS.REFRESH)
 					.setDisabled(!sameSeason)
 			)
-			.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Secondary).setCustomId(customId.sort).setLabel('Sort by Received'));
+			.addComponents(
+				new ButtonBuilder()
+					.setStyle(ButtonStyle.Secondary)
+					.setCustomId(customId.sort)
+					.setLabel('Sort by Received')
+			);
 
 		const msg = await interaction.editReply({ embeds: [embed], components: [row] });
 		if (sameSeason) return;

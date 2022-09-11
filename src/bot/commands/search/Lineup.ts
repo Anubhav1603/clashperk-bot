@@ -75,7 +75,9 @@ export default class LineupCommand extends Command {
 				`\u200e${EMOJIS.HASH} \`TH HERO \u2002  \u2002 TH HERO \``,
 				linups
 					.map((lineup, i) => {
-						const desc = lineup.map((en) => `${this.pad(en.t, 2)} ${this.pad(en.h, 4)}`).join(' \u2002vs\u2002 ');
+						const desc = lineup
+							.map((en) => `${this.pad(en.t, 2)} ${this.pad(en.h, 4)}`)
+							.join(' \u2002vs\u2002 ');
 						return `${BLUE_NUMBERS[i + 1]} \`${desc} \``;
 					})
 					.join('\n')

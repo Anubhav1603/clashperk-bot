@@ -38,15 +38,25 @@ export default class InteractionListener extends Listener {
 		const userIds = this.client.components.get(interaction.customId);
 		if (userIds?.length && userIds.includes(interaction.user.id)) return;
 		if (userIds?.length && !userIds.includes(interaction.user.id)) {
-			this.client.logger.debug(`[${interaction.guild!.name}/${interaction.user.tag}]`, { label: 'COMPONENT_BLOCKED' });
-			return interaction.reply({ content: this.i18n('common.component.unauthorized', { lng: interaction.locale }), ephemeral: true });
+			this.client.logger.debug(`[${interaction.guild!.name}/${interaction.user.tag}]`, {
+				label: 'COMPONENT_BLOCKED'
+			});
+			return interaction.reply({
+				content: this.i18n('common.component.unauthorized', { lng: interaction.locale }),
+				ephemeral: true
+			});
 		}
 
 		if (this.client.components.has(interaction.customId)) return;
 
-		this.client.logger.debug(`[${interaction.guild!.name}/${interaction.user.tag}]`, { label: 'COMPONENT_EXPIRED' });
+		this.client.logger.debug(`[${interaction.guild!.name}/${interaction.user.tag}]`, {
+			label: 'COMPONENT_EXPIRED'
+		});
 		await interaction.update({ components: [] });
-		return interaction.followUp({ content: this.i18n('common.component.expired', { lng: interaction.locale }), ephemeral: true });
+		return interaction.followUp({
+			content: this.i18n('common.component.expired', { lng: interaction.locale }),
+			ephemeral: true
+		});
 	}
 
 	private inhibitor(interaction: Interaction) {

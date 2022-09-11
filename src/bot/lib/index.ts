@@ -111,7 +111,11 @@ export class CommandHandler extends BaseHandler {
 		result: Record<string, CommandInteractionOption> = {}
 	): Record<string, CommandInteractionOption> {
 		for (const option of options) {
-			if ([ApplicationCommandOptionType.Subcommand, ApplicationCommandOptionType.SubcommandGroup].includes(option.type)) {
+			if (
+				[ApplicationCommandOptionType.Subcommand, ApplicationCommandOptionType.SubcommandGroup].includes(
+					option.type
+				)
+			) {
 				result.command = option;
 				return this.transformInteraction([...(option.options ?? [])], result);
 			}
@@ -128,7 +132,11 @@ export class CommandHandler extends BaseHandler {
 		for (const [name, option] of Object.entries(this.transformInteraction(interaction.options.data))) {
 			const key = (args[name]?.id ?? name).toString(); // KEY_OVERRIDE
 
-			if ([ApplicationCommandOptionType.Subcommand, ApplicationCommandOptionType.SubcommandGroup].includes(option.type)) {
+			if (
+				[ApplicationCommandOptionType.Subcommand, ApplicationCommandOptionType.SubcommandGroup].includes(
+					option.type
+				)
+			) {
 				resolved[key] = option.name; // SUB_COMMAND OR SUB_COMMAND_GROUP
 			} else if (option.type === ApplicationCommandOptionType.Channel) {
 				resolved[key] = (option.channel as GuildBasedChannel | null)?.isTextBased() ? option.channel : null;
@@ -150,7 +158,9 @@ export class CommandHandler extends BaseHandler {
 
 			if (resolved[key] && args[name]?.match === 'ENUM') {
 				const value = resolved[key] as string;
-				const flatten = args[name]?.enums?.find((text) => (Array.isArray(text) ? text.includes(value) : text === value));
+				const flatten = args[name]?.enums?.find((text) =>
+					Array.isArray(text) ? text.includes(value) : text === value
+				);
 				resolved[key] = flatten ? (Array.isArray(flatten) ? flatten.at(0)! : flatten) : null;
 			}
 
@@ -188,7 +198,11 @@ export class CommandHandler extends BaseHandler {
 		return this.exec(interaction, command, args);
 	}
 
-	public async exec(interaction: CommandInteraction | MessageComponentInteraction, command: Command, args: Record<string, unknown> = {}) {
+	public async exec(
+		interaction: CommandInteraction | MessageComponentInteraction,
+		command: Command,
+		args: Record<string, unknown> = {}
+	) {
 		if (await this.postInhibitor(interaction, command)) return;
 		try {
 			if (command.defer && !interaction.deferred && !interaction.replied) {
@@ -248,7 +262,13 @@ export class CommandHandler extends BaseHandler {
 		if (command.clientPermissions?.length) {
 			const missing = interaction.appPermissions?.missing(command.clientPermissions);
 			if (missing?.length) {
-				this.emit(CommandHandlerEvents.MISSING_PERMISSIONS, interaction, command, BuiltInReasons.CLIENT, missing);
+				this.emit(
+					CommandHandlerEvents.MISSING_PERMISSIONS,
+					interaction,
+					command,
+					BuiltInReasons.CLIENT,
+					missing
+				);
 				return true;
 			}
 		}
@@ -365,7 +385,17 @@ export class Command implements CommandOptions {
 
 	public constructor(
 		id: string,
-		{ defer, name, ephemeral, userPermissions, clientPermissions, description, channel, ownerOnly, category }: CommandOptions
+		{
+			defer,
+			name,
+			ephemeral,
+			userPermissions,
+			clientPermissions,
+			description,
+			channel,
+			ownerOnly,
+			category
+		}: CommandOptions
 	) {
 		this.id = id;
 		this.name = name;
@@ -391,7 +421,10 @@ export class Command implements CommandOptions {
 		return {};
 	}
 
-	public exec(interaction: CommandInteraction | MessageComponentInteraction, args: unknown): Promise<unknown> | unknown;
+	public exec(
+		interaction: CommandInteraction | MessageComponentInteraction,
+		args: unknown
+	): Promise<unknown> | unknown;
 	public exec(): Promise<unknown> | unknown {
 		throw Error('This method needs to be overwritten inside of an actual command.');
 	}

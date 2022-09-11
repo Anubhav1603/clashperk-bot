@@ -26,7 +26,10 @@ export default class CWLRoundCommand extends Command {
 		const body = await this.client.http.clanWarLeague(clan.tag);
 		if (body.statusCode === 504 || body.state === 'notInWar') {
 			return interaction.editReply(
-				this.i18n('command.cwl.still_searching', { lng: interaction.locale, clan: `${clan.name} (${clan.tag})` })
+				this.i18n('command.cwl.still_searching', {
+					lng: interaction.locale,
+					clan: `${clan.name} (${clan.tag})`
+				})
 			);
 		}
 
@@ -79,9 +82,15 @@ export default class CWLRoundCommand extends Command {
 									`\`\u200e${clan.attacks.toString().padStart(8, ' ')} \u200f\`\u200e \u2002 ${
 										EMOJIS.SWORD
 									} \u2002 \`\u200e ${opponent.attacks.toString().padEnd(8, ' ')}\u200f\``,
-									`\`\u200e${`${clan.destructionPercentage.toFixed(2)}%`.padStart(8, ' ')} \u200f\`\u200e \u2002 ${
+									`\`\u200e${`${clan.destructionPercentage.toFixed(2)}%`.padStart(
+										8,
+										' '
+									)} \u200f\`\u200e \u2002 ${
 										EMOJIS.FIRE
-									} \u2002 \`\u200e ${`${opponent.destructionPercentage.toFixed(2)}%`.padEnd(8, ' ')}\u200f\``
+									} \u2002 \`\u200e ${`${opponent.destructionPercentage.toFixed(2)}%`.padEnd(
+										8,
+										' '
+									)}\u200f\``
 								].join('\n')
 							}
 						]);
@@ -104,9 +113,15 @@ export default class CWLRoundCommand extends Command {
 									`\`\u200e${clan.attacks.toString().padStart(8, ' ')} \u200f\`\u200e \u2002 ${
 										EMOJIS.SWORD
 									} \u2002 \`\u200e ${opponent.attacks.toString().padEnd(8, ' ')}\u200f\``,
-									`\`\u200e${`${clan.destructionPercentage.toFixed(2)}%`.padStart(8, ' ')} \u200f\`\u200e \u2002 ${
+									`\`\u200e${`${clan.destructionPercentage.toFixed(2)}%`.padStart(
+										8,
+										' '
+									)} \u200f\`\u200e \u2002 ${
 										EMOJIS.FIRE
-									} \u2002 \`\u200e ${`${opponent.destructionPercentage.toFixed(2)}%`.padEnd(8, ' ')}\u200f\``
+									} \u2002 \`\u200e ${`${opponent.destructionPercentage.toFixed(2)}%`.padEnd(
+										8,
+										' '
+									)}\u200f\``
 								].join('\n')
 							}
 						]);
@@ -116,7 +131,10 @@ export default class CWLRoundCommand extends Command {
 						embed.addFields([
 							{
 								name: 'War State',
-								value: ['Preparation Day', `War Start Time: ${Util.getRelativeTime(startTimestamp)}`].join('\n')
+								value: [
+									'Preparation Day',
+									`War Start Time: ${Util.getRelativeTime(startTimestamp)}`
+								].join('\n')
 							}
 						]);
 					}
@@ -153,7 +171,10 @@ export default class CWLRoundCommand extends Command {
 
 		const options = chunks.map((ch) => ({ label: `Round #${ch.round}`, value: ch.round.toString() }));
 		const customID = this.client.uuid(interaction.user.id);
-		const menu = new SelectMenuBuilder().addOptions(options).setCustomId(customID).setPlaceholder('Select a round!');
+		const menu = new SelectMenuBuilder()
+			.addOptions(options)
+			.setCustomId(customID)
+			.setPlaceholder('Select a round!');
 
 		const msg = await interaction.editReply({
 			embeds: [round.embed],

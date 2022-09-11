@@ -56,7 +56,9 @@ export default class CommandStartedListener extends Listener {
 			args
 		});
 
-		const label = interaction.guild ? `${interaction.guild.name}/${interaction.user.tag}` : `${interaction.user.tag}`;
+		const label = interaction.guild
+			? `${interaction.guild.name}/${interaction.user.tag}`
+			: `${interaction.user.tag}`;
 		this.client.logger.debug(`${command.id}`, { label });
 	}
 }

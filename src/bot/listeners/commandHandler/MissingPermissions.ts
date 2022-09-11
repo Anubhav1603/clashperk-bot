@@ -11,7 +11,12 @@ export default class MissingPermissionsListener extends Listener {
 		});
 	}
 
-	public exec(interaction: CommandInteraction, command: Command, type: 'user' | 'client', missing: PermissionsString[]) {
+	public exec(
+		interaction: CommandInteraction,
+		command: Command,
+		type: 'user' | 'client',
+		missing: PermissionsString[]
+	) {
 		const text = {
 			client: () => {
 				const name = this.missingPermissions(interaction.channel as TextChannel, this.client.user!, missing);
@@ -23,7 +28,9 @@ export default class MissingPermissionsListener extends Listener {
 			}
 		}[type];
 
-		const label = interaction.guild ? `${interaction.guild.name}/${interaction.user.tag}` : `${interaction.user.tag}`;
+		const label = interaction.guild
+			? `${interaction.guild.name}/${interaction.user.tag}`
+			: `${interaction.user.tag}`;
 		this.client.logger.debug(`${command.id} ~ ${type}Permissions`, { label });
 
 		return interaction.reply({ content: text(), ephemeral: true });

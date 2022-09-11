@@ -16,7 +16,9 @@ export default class GuildDeleteListener extends Listener {
 
 	private async fetchWebhook() {
 		if (this.webhook) return this.webhook;
-		const webhook = await this.client.fetchWebhook(this.client.settings.get('global', 'defaultWebhook', null)).catch(() => null);
+		const webhook = await this.client
+			.fetchWebhook(this.client.settings.get('global', 'defaultWebhook', null))
+			.catch(() => null);
 		this.webhook = webhook;
 		return webhook;
 	}
@@ -37,7 +39,10 @@ export default class GuildDeleteListener extends Listener {
 				.setColor(0xeb3508)
 				.setAuthor({ name: `${guild.name} (${guild.id})`, iconURL: guild.iconURL()! })
 				.setTitle(`${EMOJIS.OWNER} ${user.tag} (${user.id})`)
-				.setFooter({ text: `${guild.memberCount} members (Shard ${guild.shard.id})`, iconURL: user.displayAvatarURL() })
+				.setFooter({
+					text: `${guild.memberCount} members (Shard ${guild.shard.id})`,
+					iconURL: user.displayAvatarURL()
+				})
 				.setTimestamp();
 			return webhook.send({
 				embeds: [embed],

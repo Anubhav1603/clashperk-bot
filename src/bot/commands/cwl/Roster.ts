@@ -26,7 +26,10 @@ export default class CWLRosterCommand extends Command {
 		const body = await this.client.http.clanWarLeague(clan.tag);
 		if (body.statusCode === 504 || body.state === 'notInWar') {
 			return interaction.editReply(
-				this.i18n('command.cwl.still_searching', { lng: interaction.locale, clan: `${clan.name} (${clan.tag})` })
+				this.i18n('command.cwl.still_searching', {
+					lng: interaction.locale,
+					clan: `${clan.name} (${clan.tag})`
+				})
 			);
 		}
 
@@ -87,7 +90,9 @@ export default class CWLRosterCommand extends Command {
 				clan.stars += this.winner(data.clan, data.opponent) ? data.clan.stars + 10 : data.clan.stars;
 				clan.destruction += data.clan.destructionPercentage * data.teamSize;
 
-				opponent.stars += this.winner(data.opponent, data.clan) ? data.opponent.stars + 10 : data.opponent.stars;
+				opponent.stars += this.winner(data.opponent, data.clan)
+					? data.opponent.stars + 10
+					: data.opponent.stars;
 				opponent.destruction += data.opponent.destructionPercentage * data.teamSize;
 			}
 
@@ -152,7 +157,9 @@ export default class CWLRosterCommand extends Command {
 						`**Next War (Round #${next.round + 1})**`,
 						`${EMOJIS.HASH} ${townHalls.map((th) => ORANGE_NUMBERS[th]).join('')} **Clan**`,
 						`${BLUE_NUMBERS[rank + 1]} ${this.getNextRoster(next.clan, townHalls)} ${next.clan.name}`,
-						`${BLUE_NUMBERS[oppRank + 1]} ${this.getNextRoster(next.opponent, townHalls)} ${next.opponent.name}`
+						`${BLUE_NUMBERS[oppRank + 1]} ${this.getNextRoster(next.opponent, townHalls)} ${
+							next.opponent.name
+						}`
 					].join('\n')
 				}
 			]);
@@ -168,7 +175,10 @@ export default class CWLRosterCommand extends Command {
 		}
 
 		const customID = this.client.uuid(interaction.user.id);
-		const button = new ButtonBuilder().setCustomId(customID).setStyle(ButtonStyle.Secondary).setLabel('Detailed Roster');
+		const button = new ButtonBuilder()
+			.setCustomId(customID)
+			.setStyle(ButtonStyle.Secondary)
+			.setLabel('Detailed Roster');
 		const msg = await interaction.editReply({
 			embeds: [embed],
 			components: [new ActionRowBuilder<ButtonBuilder>({ components: [button] })]
@@ -202,10 +212,14 @@ export default class CWLRosterCommand extends Command {
 
 			embed.addFields([
 				{
-					name: `\u200e${clan.tag === clanTag ? `__${clan.name} (${clan.tag})__` : `${clan.name} (${clan.tag})`}`,
+					name: `\u200e${
+						clan.tag === clanTag ? `__${clan.name} (${clan.tag})__` : `${clan.name} (${clan.tag})`
+					}`,
 					value: [
 						Util.chunk(townHalls, 5)
-							.map((chunks) => chunks.map((th) => `${TOWN_HALLS[th.level]} ${WHITE_NUMBERS[th.total]}\u200b`).join(' '))
+							.map((chunks) =>
+								chunks.map((th) => `${TOWN_HALLS[th.level]} ${WHITE_NUMBERS[th.total]}\u200b`).join(' ')
+							)
 							.join('\n')
 					].join('\n')
 				}

@@ -26,7 +26,11 @@ export default class Http extends Client {
 		if (!parsed) return { ok: false, statusCode: res?.status ?? 504 };
 
 		const maxAge = res?.headers.get('cache-control')?.split('=')?.[1] ?? 0;
-		return Object.assign(parsed, { statusCode: res?.status ?? 504, ok: res?.status === 200, maxAge: Number(maxAge) * 1000 });
+		return Object.assign(parsed, {
+			statusCode: res?.status ?? 504,
+			ok: res?.status === 200,
+			maxAge: Number(maxAge) * 1000
+		});
 	}
 
 	public fixTag(tag: string) {
@@ -52,14 +56,18 @@ export default class Http extends Client {
 			1000 * 60 * 15,
 			1000 * 60 * 5
 		];
-		return friendlyWarTimes.includes(this.toDate(data.startTime).getTime() - this.toDate(data.preparationStartTime).getTime());
+		return friendlyWarTimes.includes(
+			this.toDate(data.startTime).getTime() - this.toDate(data.preparationStartTime).getTime()
+		);
 	}
 
 	private toDate(ISO: string) {
 		return new Date(moment(ISO).toDate());
 	}
 
-	public async getCurrentWars(clanTag: string): Promise<(ClanWar & { warTag?: string; round?: number; isFriendly?: boolean })[]> {
+	public async getCurrentWars(
+		clanTag: string
+	): Promise<(ClanWar & { warTag?: string; round?: number; isFriendly?: boolean })[]> {
 		const date = new Date().getUTCDate();
 		if (!(date >= 1 && date <= 10)) {
 			return this.getCurrentWar(clanTag);

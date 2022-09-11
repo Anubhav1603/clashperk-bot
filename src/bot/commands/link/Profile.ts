@@ -1,4 +1,13 @@
-import { EmbedBuilder, GuildMember, CommandInteraction, ActionRowBuilder, ButtonBuilder, User, Interaction, ButtonStyle } from 'discord.js';
+import {
+	EmbedBuilder,
+	GuildMember,
+	CommandInteraction,
+	ActionRowBuilder,
+	ButtonBuilder,
+	User,
+	Interaction,
+	ButtonStyle
+} from 'discord.js';
 import { Clan, Player } from 'clashofclans.js';
 import moment from 'moment';
 import { EMOJIS, TOWN_HALLS, HEROES } from '../../util/Emojis.js';
@@ -39,7 +48,9 @@ export default class ProfileCommand extends Command {
 
 	public async exec(interaction: CommandInteraction<'cached'>, args: { member?: GuildMember; user?: User }) {
 		const user = args.user ?? (args.member ?? interaction.member).user;
-		const data = await this.client.db.collection<UserInfoModel>(Collections.LINKED_PLAYERS).findOne({ user: user.id });
+		const data = await this.client.db
+			.collection<UserInfoModel>(Collections.LINKED_PLAYERS)
+			.findOne({ user: user.id });
 
 		if (data && data.user_tag !== user.tag) {
 			this.client.resolver.updateUserTag(interaction.guild, user.id);
@@ -64,7 +75,11 @@ export default class ProfileCommand extends Command {
 					`${EMOJIS.CLAN} [${clan.name} (${
 						clan.tag
 					})](https://link.clashofclans.com/en?action=OpenClanProfile&tag=${encodeURIComponent(clan.tag)})`,
-					...[`${EMOJIS.EMPTY} Level ${clan.clanLevel} ${EMOJIS.USERS} ${clan.members} Member${clan.members === 1 ? '' : 's'}`],
+					...[
+						`${EMOJIS.EMPTY} Level ${clan.clanLevel} ${EMOJIS.USERS} ${clan.members} Member${
+							clan.members === 1 ? '' : 's'
+						}`
+					],
 					'\u200b'
 				].join('\n')
 			);
@@ -88,7 +103,11 @@ export default class ProfileCommand extends Command {
 			if (player.statusCode === 404) this.deleteBanned(user.id, tag);
 			if (!player.ok) continue;
 
-			const signature = this.isVerified(data, tag) ? EMOJIS.VERIFIED : this.isLinked(data, tag) ? EMOJIS.AUTHORIZE : '';
+			const signature = this.isVerified(data, tag)
+				? EMOJIS.VERIFIED
+				: this.isLinked(data, tag)
+				? EMOJIS.AUTHORIZE
+				: '';
 			collection.push({
 				field: `${TOWN_HALLS[player.townHallLevel]} ${hideLink ? '' : '['}${player.name} (${player.tag})${
 					hideLink ? '' : `](${this.profileURL(player.tag)})`
@@ -169,7 +188,9 @@ export default class ProfileCommand extends Command {
 		for (let i = 1; i <= sheet.columns.length; i++) {
 			sheet.getColumn(i).alignment = { horizontal: 'center', wrapText: true, vertical: 'middle' };
 		}
-		sheet.addRows(data.map((en) => [en.name, en.tag, en.clan?.name, en.clan?.tag, roles[en.role!], en.verified, en.external]));
+		sheet.addRows(
+			data.map((en) => [en.name, en.tag, en.clan?.name, en.clan?.tag, roles[en.role!], en.verified, en.external])
+		);
 		return workbook.xlsx.writeBuffer();
 	}
 
@@ -196,7 +217,9 @@ export default class ProfileCommand extends Command {
 
 	private deleteBanned(user: string, tag: string) {
 		this.client.http.unlinkPlayerTag(tag);
-		return this.client.db.collection(Collections.LINKED_PLAYERS).updateOne({ user }, { $pull: { entries: { tag } } });
+		return this.client.db
+			.collection(Collections.LINKED_PLAYERS)
+			.updateOne({ user }, { $pull: { entries: { tag } } });
 	}
 
 	private profileURL(tag: string) {

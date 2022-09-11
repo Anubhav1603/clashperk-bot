@@ -1,5 +1,12 @@
 import { Player } from 'clashofclans.js';
-import { CommandInteraction, ActionRowBuilder, ButtonBuilder, EmbedBuilder, SelectMenuBuilder, ButtonStyle } from 'discord.js';
+import {
+	CommandInteraction,
+	ActionRowBuilder,
+	ButtonBuilder,
+	EmbedBuilder,
+	SelectMenuBuilder,
+	ButtonStyle
+} from 'discord.js';
 import { Command } from '../../lib/index.js';
 import { TroopInfo, TroopJSON } from '../../types/index.js';
 import { BUILDER_TROOPS, HOME_TROOPS, SUPER_TROOPS, TOWN_HALLS } from '../../util/Emojis.js';
@@ -24,7 +31,11 @@ export default class UnitsCommand extends Command {
 
 		const embed = this.embed(data, true)
 			.setColor(this.client.embed(interaction))
-			.setDescription(`Units for TH${data.townHallLevel} Max ${data.builderHallLevel ? `and BH${data.builderHallLevel} Max` : ''}`);
+			.setDescription(
+				`Units for TH${data.townHallLevel} Max ${
+					data.builderHallLevel ? `and BH${data.builderHallLevel} Max` : ''
+				}`
+			);
 
 		const CUSTOM_ID = {
 			MAX_LEVEL: this.client.uuid(interaction.user.id),
@@ -45,12 +56,16 @@ export default class UnitsCommand extends Command {
 			emoji: TOWN_HALLS[op.townHallLevel]
 		}));
 		const menuRow = new ActionRowBuilder<SelectMenuBuilder>().addComponents(
-			new SelectMenuBuilder().setCustomId(CUSTOM_ID.SELECT_ACCOUNT).setPlaceholder('Select an account!').addOptions(options)
+			new SelectMenuBuilder()
+				.setCustomId(CUSTOM_ID.SELECT_ACCOUNT)
+				.setPlaceholder('Select an account!')
+				.addOptions(options)
 		);
 		await interaction.editReply({ components: options.length ? [buttonRow, menuRow] : [buttonRow] });
 
 		const collector = msg.createMessageComponentCollector({
-			filter: (action) => Object.values(CUSTOM_ID).includes(action.customId) && action.user.id === interaction.user.id,
+			filter: (action) =>
+				Object.values(CUSTOM_ID).includes(action.customId) && action.user.id === interaction.user.id,
 			time: 5 * 60 * 1000
 		});
 
@@ -60,22 +75,32 @@ export default class UnitsCommand extends Command {
 				const embed = this.embed(data!, false);
 				embed.setColor(this.client.embed(interaction));
 				embed.setDescription(
-					`Units for TH${data!.townHallLevel} ${data!.builderHallLevel ? `and BH${data!.builderHallLevel}` : ''}`
+					`Units for TH${data!.townHallLevel} ${
+						data!.builderHallLevel ? `and BH${data!.builderHallLevel}` : ''
+					}`
 				);
 
 				buttonRow.components[0].setLabel('Town Hall Max Level').setCustomId(CUSTOM_ID.TOWN_HALL_MAX);
-				await action.update({ embeds: [embed], components: options.length ? [buttonRow, menuRow] : [buttonRow] });
+				await action.update({
+					embeds: [embed],
+					components: options.length ? [buttonRow, menuRow] : [buttonRow]
+				});
 			}
 
 			if (action.customId === CUSTOM_ID.TOWN_HALL_MAX) {
 				const embed = this.embed(data!, true);
 				embed.setColor(this.client.embed(interaction));
 				embed.setDescription(
-					`Units for TH${data!.townHallLevel} Max ${data!.builderHallLevel ? `and BH${data!.builderHallLevel} Max` : ''}`
+					`Units for TH${data!.townHallLevel} Max ${
+						data!.builderHallLevel ? `and BH${data!.builderHallLevel} Max` : ''
+					}`
 				);
 
 				buttonRow.components[0].setLabel('Max Level').setCustomId(CUSTOM_ID.TOWN_HALL_MAX);
-				await action.update({ embeds: [embed], components: options.length ? [buttonRow, menuRow] : [buttonRow] });
+				await action.update({
+					embeds: [embed],
+					components: options.length ? [buttonRow, menuRow] : [buttonRow]
+				});
 			}
 
 			if (action.customId === CUSTOM_ID.SELECT_ACCOUNT && action.isSelectMenu()) {
@@ -105,7 +130,11 @@ export default class UnitsCommand extends Command {
 			})
 			.reduce<TroopJSON>((prev, curr) => {
 				const unlockBuilding =
-					curr.category === 'hero' ? (curr.village === 'home' ? 'Town Hall' : 'Builder Hall') : curr.unlock.building;
+					curr.category === 'hero'
+						? curr.village === 'home'
+							? 'Town Hall'
+							: 'Builder Hall'
+						: curr.unlock.building;
 				if (!(unlockBuilding in prev)) prev[unlockBuilding] = [];
 				prev[unlockBuilding].push(curr);
 				return prev;
@@ -160,9 +189,13 @@ export default class UnitsCommand extends Command {
 							.map((chunks) =>
 								chunks
 									.map((unit) => {
-										const unitIcon = (unit.village === 'home' ? HOME_TROOPS : BUILDER_TROOPS)[unit.name];
+										const unitIcon = (unit.village === 'home' ? HOME_TROOPS : BUILDER_TROOPS)[
+											unit.name
+										];
 										const level = this.padStart(unit.level);
-										const maxLevel = option ? this.padEnd(unit.hallMaxLevel) : this.padEnd(unit.maxLevel);
+										const maxLevel = option
+											? this.padEnd(unit.hallMaxLevel)
+											: this.padEnd(unit.maxLevel);
 										return `${unitIcon} \`\u200e${level}/${maxLevel}\u200f\``;
 									})
 									.join(' ')
@@ -174,15 +207,21 @@ export default class UnitsCommand extends Command {
 		}
 
 		const superTroops = RAW_TROOPS_DATA.SUPER_TROOPS.filter((unit) =>
-			apiTroops.find((un) => un.name === unit.original && un.village === unit.village && un.level >= unit.minOriginalLevel)
+			apiTroops.find(
+				(un) => un.name === unit.original && un.village === unit.village && un.level >= unit.minOriginalLevel
+			)
 		).map((unit) => {
-			const { maxLevel, level, name } = apiTroops.find((u) => u.name === unit.original && u.village === unit.village) ?? {
+			const { maxLevel, level, name } = apiTroops.find(
+				(u) => u.name === unit.original && u.village === unit.village
+			) ?? {
 				maxLevel: 0,
 				level: 0
 			};
 			const hallLevel = data.townHallLevel;
 
-			const originalTroop = RAW_TROOPS_DATA.TROOPS.find((un) => un.name === name && un.category === 'troop' && un.village === 'home');
+			const originalTroop = RAW_TROOPS_DATA.TROOPS.find(
+				(un) => un.name === name && un.category === 'troop' && un.village === 'home'
+			);
 
 			return {
 				village: unit.village,
@@ -199,13 +238,19 @@ export default class UnitsCommand extends Command {
 				{
 					name: `Super Troops (${activeSuperTroops.length ? 'Active' : 'Usable'})`,
 					value: [
-						this.chunk(superTroops.filter((en) => (activeSuperTroops.length ? activeSuperTroops.includes(en.name) : true)))
+						this.chunk(
+							superTroops.filter((en) =>
+								activeSuperTroops.length ? activeSuperTroops.includes(en.name) : true
+							)
+						)
 							.map((chunks) =>
 								chunks
 									.map((unit) => {
 										const unitIcon = SUPER_TROOPS[unit.name];
 										const level = this.padStart(unit.level);
-										const maxLevel = option ? this.padEnd(unit.hallMaxLevel) : this.padEnd(unit.maxLevel);
+										const maxLevel = option
+											? this.padEnd(unit.hallMaxLevel)
+											: this.padEnd(unit.maxLevel);
 										return `${unitIcon} \`\u200e${level}/${maxLevel}\u200f\``;
 									})
 									.join(' ')

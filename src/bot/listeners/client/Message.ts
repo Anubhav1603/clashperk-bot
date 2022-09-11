@@ -22,7 +22,11 @@ export default class MessageListener extends Listener {
 			!message.channel.permissionsFor(this.client.user!)?.has(PermissionFlagsBits.SendMessagesInThreads)
 		)
 			return;
-		if (!message.channel.permissionsFor(this.client.user!)?.has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel]))
+		if (
+			!message.channel
+				.permissionsFor(this.client.user!)
+				?.has([PermissionFlagsBits.SendMessages, PermissionFlagsBits.ViewChannel])
+		)
 			return;
 
 		const prefix = this.client.settings.get<string>(message.guild.id, Settings.PREFIX, '!');
@@ -39,7 +43,9 @@ export default class MessageListener extends Listener {
 
 		if (!command) return;
 		if (!this.client.isOwner(message.author.id)) {
-			return this.client.logger.log(`${command.id} ~ text-command`, { label: `${message.guild.name}/${message.author.tag}` });
+			return this.client.logger.log(`${command.id} ~ text-command`, {
+				label: `${message.guild.name}/${message.author.tag}`
+			});
 		}
 
 		try {
@@ -52,7 +58,9 @@ export default class MessageListener extends Listener {
 			this.client.logger.debug(`${command.id}`, { label: `${message.guild.name}/${message.author.tag}` });
 			await command.run(message, resolved);
 		} catch (error) {
-			this.client.logger.error(`${command.id} ~ ${error as string}`, { label: `${message.guild.name}/${message.author.tag}` });
+			this.client.logger.error(`${command.id} ~ ${error as string}`, {
+				label: `${message.guild.name}/${message.author.tag}`
+			});
 			console.error(error);
 			await message.channel.send('**Something went wrong while executing that command.**');
 		}

@@ -36,7 +36,9 @@ export default class PlayerCommand extends Command {
 	}
 
 	public async getPlayers(userId: string) {
-		const data = await this.client.db.collection<UserInfoModel>(Collections.LINKED_PLAYERS).findOne({ user: userId });
+		const data = await this.client.db
+			.collection<UserInfoModel>(Collections.LINKED_PLAYERS)
+			.findOne({ user: userId });
 		const others = await this.client.http.getPlayerTags(userId);
 
 		const playerTagSet = new Set([...(data?.entries ?? []).map((en) => en.tag), ...others.map((tag) => tag)]);
@@ -69,7 +71,10 @@ export default class PlayerCommand extends Command {
 		}));
 
 		const customID = this.client.uuid(interaction.user.id);
-		const menu = new SelectMenuBuilder().setCustomId(customID).setPlaceholder('Select an account!').addOptions(options);
+		const menu = new SelectMenuBuilder()
+			.setCustomId(customID)
+			.setPlaceholder('Select an account!')
+			.addOptions(options);
 
 		await interaction.editReply({ components: [new ActionRowBuilder<SelectMenuBuilder>({ components: [menu] })] });
 		const collector = msg.createMessageComponentCollector({
@@ -112,23 +117,29 @@ export default class PlayerCommand extends Command {
 
 		const lastSeen = aggregated?.lastSeen ? this.getLastSeen(aggregated.lastSeen) : 'Unknown';
 		const clan = data.clan
-			? `**Clan Info**\n${EMOJIS.CLAN} [${data.clan.name}](${this.clanURL(data.clan.tag)}) (${roles[data.role!]})\n`
+			? `**Clan Info**\n${EMOJIS.CLAN} [${data.clan.name}](${this.clanURL(data.clan.tag)}) (${
+					roles[data.role!]
+			  })\n`
 			: '';
 
 		const war = await this.getWars(data.tag);
-		const warStats = `${EMOJIS.CROSS_SWORD} ${war.total} ${EMOJIS.SWORD} ${war.attacks} ${EMOJIS.STAR} ${war.stars} ${
-			EMOJIS.THREE_STARS
-		} ${war.starTypes.filter((num) => num === 3).length} ${EMOJIS.EMPTY_SWORD} ${war.of - war.attacks}`;
+		const warStats = `${EMOJIS.CROSS_SWORD} ${war.total} ${EMOJIS.SWORD} ${war.attacks} ${EMOJIS.STAR} ${
+			war.stars
+		} ${EMOJIS.THREE_STARS} ${war.starTypes.filter((num) => num === 3).length} ${EMOJIS.EMPTY_SWORD} ${
+			war.of - war.attacks
+		}`;
 		const weaponLevel = data.townHallWeaponLevel ? weaponLevels[data.townHallWeaponLevel] : '';
 		const embed = new EmbedBuilder()
 			.setTitle(`${escapeMarkdown(data.name)} (${data.tag})`)
 			.setURL(`https://link.clashofclans.com/en?action=OpenPlayerProfile&tag=${encodeURIComponent(data.tag)}`)
-			.setThumbnail(data.league?.iconUrls.small ?? `https://cdn.clashperk.com/assets/townhalls/${data.townHallLevel}.png`)
+			.setThumbnail(
+				data.league?.iconUrls.small ?? `https://cdn.clashperk.com/assets/townhalls/${data.townHallLevel}.png`
+			)
 			.setDescription(
 				[
-					`${TOWN_HALLS[data.townHallLevel]} **${data.townHallLevel}${weaponLevel}** ${EMOJIS.EXP} **${data.expLevel}** ${
-						EMOJIS.TROPHY
-					} **${data.trophies}** ${EMOJIS.WAR_STAR} **${data.warStars}**`
+					`${TOWN_HALLS[data.townHallLevel]} **${data.townHallLevel}${weaponLevel}** ${EMOJIS.EXP} **${
+						data.expLevel
+					}** ${EMOJIS.TROPHY} **${data.trophies}** ${EMOJIS.WAR_STAR} **${data.warStars}**`
 				].join('\n')
 			);
 		embed.addFields([
@@ -138,7 +149,9 @@ export default class PlayerCommand extends Command {
 					`**Donated**\n${EMOJIS.TROOPS_DONATE} ${data.donations} ${EMOJIS.UP_KEY}`,
 					`**Received**\n${EMOJIS.TROOPS_DONATE} ${data.donationsReceived} ${EMOJIS.DOWN_KEY}`,
 					`**Attacks Won**\n${EMOJIS.SWORD} ${data.attackWins}`,
-					`**Defense Won**\n${EMOJIS.SHIELD} ${data.defenseWins}${war.total > 0 ? `\n**War Stats**\n${warStats}` : ''}`,
+					`**Defense Won**\n${EMOJIS.SHIELD} ${data.defenseWins}${
+						war.total > 0 ? `\n**War Stats**\n${warStats}` : ''
+					}`,
 					'\u200b\u2002'
 				].join('\n')
 			}
@@ -160,18 +173,32 @@ export default class PlayerCommand extends Command {
 					'**Total Loots**',
 					[
 						`${EMOJIS.GOLD} ${this.format(data.achievements.find((d) => d.name === 'Gold Grab')!.value)}`,
-						`${EMOJIS.ELIXIR} ${this.format(data.achievements.find((d) => d.name === 'Elixir Escapade')!.value)}`,
-						`${EMOJIS.DARK_ELIXIR} ${this.format(data.achievements.find((d) => d.name === 'Heroic Heist')!.value)}`
+						`${EMOJIS.ELIXIR} ${this.format(
+							data.achievements.find((d) => d.name === 'Elixir Escapade')!.value
+						)}`,
+						`${EMOJIS.DARK_ELIXIR} ${this.format(
+							data.achievements.find((d) => d.name === 'Heroic Heist')!.value
+						)}`
 					].join(' '),
-					`**Troops Donated**\n${EMOJIS.TROOPS_DONATE} ${data.achievements.find((d) => d.name === 'Friend in Need')!.value}`,
-					`**Spells Donated**\n${EMOJIS.SPELL_DONATE} ${data.achievements.find((d) => d.name === 'Sharing is caring')!.value}`,
+					`**Troops Donated**\n${EMOJIS.TROOPS_DONATE} ${
+						data.achievements.find((d) => d.name === 'Friend in Need')!.value
+					}`,
+					`**Spells Donated**\n${EMOJIS.SPELL_DONATE} ${
+						data.achievements.find((d) => d.name === 'Sharing is caring')!.value
+					}`,
 					`**Siege Donated**\n${SIEGE_MACHINES['Wall Wrecker']} ${
 						data.achievements.find((d) => d.name === 'Siege Sharer')!.value
 					}`,
 					`**Attacks Won**\n${EMOJIS.SWORD} ${data.achievements.find((d) => d.name === 'Conqueror')!.value}`,
-					`**Defense Won**\n${EMOJIS.SHIELD} ${data.achievements.find((d) => d.name === 'Unbreakable')!.value}`,
-					`**CWL War Stars**\n${EMOJIS.STAR} ${data.achievements.find((d) => d.name === 'War League Legend')!.value}`,
-					`**Clan Games Points**\n${EMOJIS.CLAN_GAMES} ${data.achievements.find((d) => d.name === 'Games Champion')!.value}`,
+					`**Defense Won**\n${EMOJIS.SHIELD} ${
+						data.achievements.find((d) => d.name === 'Unbreakable')!.value
+					}`,
+					`**CWL War Stars**\n${EMOJIS.STAR} ${
+						data.achievements.find((d) => d.name === 'War League Legend')!.value
+					}`,
+					`**Clan Games Points**\n${EMOJIS.CLAN_GAMES} ${
+						data.achievements.find((d) => d.name === 'Games Champion')!.value
+					}`,
 					`**Capital Gold Looted**\n${EMOJIS.CAPITAL_GOLD} ${
 						data.achievements.find((d) => d.name === 'Aggressive Capitalism')?.value ?? 0
 					}`,
@@ -183,9 +210,14 @@ export default class PlayerCommand extends Command {
 			}
 		]);
 
-		const heroes = data.heroes.filter((hero) => hero.village === 'home').map((hero) => `${HEROES[hero.name]} ${hero.level}`);
+		const heroes = data.heroes
+			.filter((hero) => hero.village === 'home')
+			.map((hero) => `${HEROES[hero.name]} ${hero.level}`);
 		embed.addFields([
-			{ name: '**Heroes**', value: [`${heroes.length ? heroes.join(' ') : `${EMOJIS.WRONG} None`}`, '\u200b\u2002'].join('\n') }
+			{
+				name: '**Heroes**',
+				value: [`${heroes.length ? heroes.join(' ') : `${EMOJIS.WRONG} None`}`, '\u200b\u2002'].join('\n')
+			}
 		]);
 
 		const user = await this.getLinkedUser(interaction, data.tag);

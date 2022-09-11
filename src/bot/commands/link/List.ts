@@ -1,4 +1,12 @@
-import { Collection, GuildMember, CommandInteraction, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ButtonStyle } from 'discord.js';
+import {
+	Collection,
+	GuildMember,
+	CommandInteraction,
+	ActionRowBuilder,
+	ButtonBuilder,
+	EmbedBuilder,
+	ButtonStyle
+} from 'discord.js';
 import { Clan, ClanMember } from 'clashofclans.js';
 import { Collections } from '../../util/Constants.js';
 import { EMOJIS } from '../../util/Emojis.js';
@@ -16,12 +24,17 @@ export default class LinkListCommand extends Command {
 		});
 	}
 
-	public async exec(interaction: CommandInteraction<'cached'>, { tag, showTags }: { tag?: string; showTags?: boolean }) {
+	public async exec(
+		interaction: CommandInteraction<'cached'>,
+		{ tag, showTags }: { tag?: string; showTags?: boolean }
+	) {
 		const clan = await this.client.resolver.resolveClan(interaction, tag);
 		if (!clan) return;
 		if (!clan.members) return interaction.editReply(`${clan.name} does not have any clan members...`);
 
-		const memberTags: { tag: string; user: string; user_tag?: string }[] = await this.client.http.getDiscordLinks(clan.memberList);
+		const memberTags: { tag: string; user: string; user_tag?: string }[] = await this.client.http.getDiscordLinks(
+			clan.memberList
+		);
 		const dbMembers = await this.client.db
 			.collection(Collections.LINKED_PLAYERS)
 			.find({ 'entries.tag': { $in: clan.memberList.map((m) => m.tag) } })
@@ -50,11 +63,14 @@ export default class LinkListCommand extends Command {
 		const notInDiscord = memberTags.filter((mem) => mem.user_tag && !guildMembers.has(mem.user));
 		// Not linked to discord.
 		const offDiscord = clan.memberList.filter(
-			(m) => !notInDiscord.some((en) => en.tag === m.tag) && !memberTags.some((en) => en.tag === m.tag && guildMembers.has(en.user))
+			(m) =>
+				!notInDiscord.some((en) => en.tag === m.tag) &&
+				!memberTags.some((en) => en.tag === m.tag && guildMembers.has(en.user))
 		);
 
 		const embed = this.getEmbed(guildMembers, clan, showTags!, onDiscord, offDiscord, notInDiscord);
-		if (!onDiscord.length) return interaction.editReply({ embeds: [embed.setColor(this.client.embed(interaction))] });
+		if (!onDiscord.length)
+			return interaction.editReply({ embeds: [embed.setColor(this.client.embed(interaction))] });
 
 		const row = new ActionRowBuilder<ButtonBuilder>()
 			.addComponents(
@@ -101,7 +117,9 @@ export default class LinkListCommand extends Command {
 				notInDiscord
 					.map((mem) => {
 						const member = clan.memberList.find((m) => m.tag === mem.tag)!;
-						const user: string = showTag ? member.tag.padStart(12, ' ') : mem.user_tag.substring(0, 12).padStart(12, ' ');
+						const user: string = showTag
+							? member.tag.padStart(12, ' ')
+							: mem.user_tag.substring(0, 12).padStart(12, ' ');
 						return { name: this.parseName(member.name), user };
 					})
 					.sort((a, b) => this.localeSort(a, b))
@@ -112,7 +130,13 @@ export default class LinkListCommand extends Command {
 				offDiscord.length ? `\n${EMOJIS.WRONG} **Players not Linked: ${offDiscord.length}**` : '',
 				offDiscord
 					.sort((a, b) => this.localeSort(a, b))
-					.map((mem) => `✘ \`\u200e${this.parseName(mem.name)}\u200f\` \u200e \` ${mem.tag.padStart(12, ' ')} \u200f\``)
+					.map(
+						(mem) =>
+							`✘ \`\u200e${this.parseName(mem.name)}\u200f\` \u200e \` ${mem.tag.padStart(
+								12,
+								' '
+							)} \u200f\``
+					)
 					.join('\n')
 			]
 				.filter((text) => text)

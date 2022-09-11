@@ -1,4 +1,11 @@
-import { EmbedBuilder, GuildMember, ActionRowBuilder, ButtonBuilder, CommandInteraction, ButtonStyle } from 'discord.js';
+import {
+	EmbedBuilder,
+	GuildMember,
+	ActionRowBuilder,
+	ButtonBuilder,
+	CommandInteraction,
+	ButtonStyle
+} from 'discord.js';
 import { Clan, Player } from 'clashofclans.js';
 import { Args, Command } from '../../lib/index.js';
 import { Collections } from '../../util/Constants.js';
@@ -28,13 +35,17 @@ export default class LinkCreateCommand extends Command {
 		};
 	}
 
-	public async exec(interaction: CommandInteraction<'cached'>, args: { tag?: string; member?: GuildMember; default?: boolean }) {
+	public async exec(
+		interaction: CommandInteraction<'cached'>,
+		args: { tag?: string; member?: GuildMember; default?: boolean }
+	) {
 		if (!args.tag) {
 			return interaction.editReply(this.i18n('command.link.no_tag', { lng: interaction.locale }));
 		}
 
 		const member = args.member ?? interaction.member;
-		if (member.user.bot) return interaction.editReply(this.i18n('command.link.create.no_bots', { lng: interaction.locale }));
+		if (member.user.bot)
+			return interaction.editReply(this.i18n('command.link.create.no_bots', { lng: interaction.locale }));
 
 		const tags = await Promise.all([this.client.http.player(args.tag), this.client.http.clan(args.tag)]);
 		const types: Record<string, string> = {
@@ -56,12 +67,20 @@ export default class LinkCreateCommand extends Command {
 				PLAYER: this.client.uuid(interaction.user.id)
 			};
 			const row = new ActionRowBuilder<ButtonBuilder>()
-				.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Primary).setLabel('Link Player').setCustomId(CUSTOM_ID.PLAYER))
-				.addComponents(new ButtonBuilder().setStyle(ButtonStyle.Primary).setLabel('Link Clan').setCustomId(CUSTOM_ID.CLAN));
+				.addComponents(
+					new ButtonBuilder()
+						.setStyle(ButtonStyle.Primary)
+						.setLabel('Link Player')
+						.setCustomId(CUSTOM_ID.PLAYER)
+				)
+				.addComponents(
+					new ButtonBuilder().setStyle(ButtonStyle.Primary).setLabel('Link Clan').setCustomId(CUSTOM_ID.CLAN)
+				);
 
 			const msg = await interaction.editReply({ embeds: [embed], components: [row] });
 			const collector = msg.createMessageComponentCollector({
-				filter: (action) => Object.values(CUSTOM_ID).includes(action.customId) && action.user.id === interaction.user.id,
+				filter: (action) =>
+					Object.values(CUSTOM_ID).includes(action.customId) && action.user.id === interaction.user.id,
 				time: 5 * 60 * 1000
 			});
 
@@ -135,13 +154,19 @@ export default class LinkCreateCommand extends Command {
 		if (doc && doc.user === member.id && ((def && member.id !== interaction.user.id) || !def)) {
 			await this.resetLinkAPI(member.id, player.tag);
 			return interaction.editReply(
-				this.i18n('command.link.create.link_exists', { lng: interaction.locale, player: `**${player.name} (${player.tag})**` })
+				this.i18n('command.link.create.link_exists', {
+					lng: interaction.locale,
+					player: `**${player.name} (${player.tag})**`
+				})
 			);
 		}
 
 		if (doc && doc.user !== member.id) {
 			return interaction.editReply(
-				this.i18n('command.link.create.already_linked', { lng: interaction.locale, player: `**${player.name} (${player.tag})**` })
+				this.i18n('command.link.create.already_linked', {
+					lng: interaction.locale,
+					player: `**${player.name} (${player.tag})**`
+				})
 			);
 		}
 
@@ -153,7 +178,10 @@ export default class LinkCreateCommand extends Command {
 		if (def && member.id === interaction.user.id) {
 			await this.client.db
 				.collection(Collections.LINKED_PLAYERS)
-				.updateOne({ user: member.id }, { $set: { user_tag: member.user.tag }, $pull: { entries: { tag: player.tag } } });
+				.updateOne(
+					{ user: member.id },
+					{ $set: { user_tag: member.user.tag }, $pull: { entries: { tag: player.tag } } }
+				);
 		}
 
 		await this.client.db.collection(Collections.LINKED_PLAYERS).updateOne(
@@ -168,7 +196,13 @@ export default class LinkCreateCommand extends Command {
 					def && member.id === interaction.user.id // only owner can set default account
 						? {
 								entries: {
-									$each: [{ tag: player.tag, name: player.name, verified: this.isVerified(doc, player.tag) }],
+									$each: [
+										{
+											tag: player.tag,
+											name: player.name,
+											verified: this.isVerified(doc, player.tag)
+										}
+									],
 									$position: 0
 								}
 						  }

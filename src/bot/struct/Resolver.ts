@@ -43,7 +43,10 @@ export default class Resolver {
 			return this.fail(interaction, i18next.t('common.no_player_tag', { lng: interaction.locale }));
 		}
 
-		return this.fail(interaction, i18next.t('common.player_not_linked', { lng: interaction.locale, user: parsed.user.tag }));
+		return this.fail(
+			interaction,
+			i18next.t('common.player_not_linked', { lng: interaction.locale, user: parsed.user.tag })
+		);
 	}
 
 	private async clanAlias(guild: string, alias: string) {
@@ -76,10 +79,17 @@ export default class Resolver {
 			return this.fail(interaction, i18next.t('common.no_clan_tag', { lng: interaction.locale }));
 		}
 
-		return this.fail(interaction, i18next.t('common.clan_not_linked', { lng: interaction.locale, user: parsed.user.tag }));
+		return this.fail(
+			interaction,
+			i18next.t('common.clan_not_linked', { lng: interaction.locale, user: parsed.user.tag })
+		);
 	}
 
-	public async getPlayer(interaction: BaseInteraction, tag: string, user?: User): Promise<(Player & { user?: User }) | null> {
+	public async getPlayer(
+		interaction: BaseInteraction,
+		tag: string,
+		user?: User
+	): Promise<(Player & { user?: User }) | null> {
 		const data: Player = await this.client.http.fetch(`/players/${encodeURIComponent(this.parseTag(tag))}`);
 		if (data.ok) return { ...data, user };
 
@@ -112,7 +122,9 @@ export default class Resolver {
 
 		const id = /<@!?(\d{17,19})>/.exec(args)?.[1] ?? /^\d{17,19}/.exec(args)?.[0];
 		if (id) {
-			const member = interaction.guild.members.cache.get(id) ?? (await interaction.guild.members.fetch(id).catch(() => null));
+			const member =
+				interaction.guild.members.cache.get(id) ??
+				(await interaction.guild.members.fetch(id).catch(() => null));
 			if (member) return { user: member.user, matched: true, isTag: false };
 			return { user: null, matched: true, isTag: false };
 		}
@@ -125,7 +137,9 @@ export default class Resolver {
 	}
 
 	private async getLinkedClan(interaction: BaseInteraction<'cached'>, userId: string) {
-		const clan = await this.client.db.collection(Collections.CLAN_STORES).findOne({ channels: interaction.channel!.id });
+		const clan = await this.client.db
+			.collection(Collections.CLAN_STORES)
+			.findOne({ channels: interaction.channel!.id });
 		if (clan) return clan;
 		const user = await this.getLinkedUserClan(userId);
 		if (user) return user;
@@ -148,7 +162,9 @@ export default class Resolver {
 	}
 
 	public async getPlayers(userId: string) {
-		const data = await this.client.db.collection<UserInfoModel>(Collections.LINKED_PLAYERS).findOne({ user: userId });
+		const data = await this.client.db
+			.collection<UserInfoModel>(Collections.LINKED_PLAYERS)
+			.findOne({ user: userId });
 		const others = await this.client.http.getPlayerTags(userId);
 
 		const playerTagSet = new Set([...(data?.entries ?? []).map((en) => en.tag), ...others.map((tag) => tag)]);
@@ -196,7 +212,9 @@ export default class Resolver {
 			!this.client.isOwner(interaction.user) &&
 			interaction.guildId === '1016659402817814620'
 		) {
-			await interaction.editReply({ content: i18next.t('common.clan_verification', { lng: interaction.locale, code }) });
+			await interaction.editReply({
+				content: i18next.t('common.clan_verification', { lng: interaction.locale, code })
+			});
 			return null;
 		}
 
@@ -206,8 +224,9 @@ export default class Resolver {
 	private verifyClan(code: string, clan: Clan, tags: { tag: string; verified: boolean }[]) {
 		const verifiedTags = tags.filter((en) => en.verified).map((en) => en.tag);
 		return (
-			clan.memberList.filter((m) => ['coLeader', 'leader'].includes(m.role)).some((m) => verifiedTags.includes(m.tag)) ||
-			clan.description.toUpperCase().includes(code)
+			clan.memberList
+				.filter((m) => ['coLeader', 'leader'].includes(m.role))
+				.some((m) => verifiedTags.includes(m.tag)) || clan.description.toUpperCase().includes(code)
 		);
 	}
 }

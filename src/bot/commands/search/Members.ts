@@ -42,7 +42,9 @@ export default class MembersCommand extends Command {
 		const data = await this.client.resolver.resolveClan(interaction, args.tag);
 		if (!data) return;
 		if (data.members < 1) {
-			return interaction.editReply(this.i18n('common.no_clan_members', { lng: interaction.locale, clan: data.name }));
+			return interaction.editReply(
+				this.i18n('common.no_clan_members', { lng: interaction.locale, clan: data.name })
+			);
 		}
 
 		const command = {
@@ -132,7 +134,11 @@ export default class MembersCommand extends Command {
 						.setEmoji(EMOJIS.DISCORD)
 				)
 				.addComponents(
-					new ButtonBuilder().setEmoji('📥').setLabel('Download').setCustomId(download).setStyle(ButtonStyle.Secondary)
+					new ButtonBuilder()
+						.setEmoji('📥')
+						.setLabel('Download')
+						.setCustomId(download)
+						.setStyle(ButtonStyle.Secondary)
 				),
 			new ActionRowBuilder<ButtonBuilder>().addComponents(
 				new ButtonBuilder()
@@ -145,7 +151,8 @@ export default class MembersCommand extends Command {
 
 		const msg = await interaction.editReply({ embeds: [embed], components });
 		const collector = msg.createMessageComponentCollector({
-			filter: (action) => [discord, download, warPref].includes(action.customId) && action.user.id === interaction.user.id,
+			filter: (action) =>
+				[discord, download, warPref].includes(action.customId) && action.user.id === interaction.user.id,
 			time: 5 * 60 * 1000,
 			max: 1
 		});
@@ -165,10 +172,9 @@ export default class MembersCommand extends Command {
 						optedIn
 							.map(
 								(m) =>
-									`\u200e**✓** ${ORANGE_NUMBERS[m.townHallLevel]} \` ${Util.escapeBackTick(m.name).padEnd(
-										15,
-										' '
-									)} \u200f\``
+									`\u200e**✓** ${ORANGE_NUMBERS[m.townHallLevel]} \` ${Util.escapeBackTick(
+										m.name
+									).padEnd(15, ' ')} \u200f\``
 							)
 							.join('\n'),
 						'',
@@ -176,7 +182,10 @@ export default class MembersCommand extends Command {
 						optedOut
 							.map(
 								(m) =>
-									`\u200e✘ ${ORANGE_NUMBERS[m.townHallLevel]} \` ${Util.escapeBackTick(m.name).padEnd(15, ' ')} \u200f\``
+									`\u200e✘ ${ORANGE_NUMBERS[m.townHallLevel]} \` ${Util.escapeBackTick(m.name).padEnd(
+										15,
+										' '
+									)} \u200f\``
 							)
 							.join('\n')
 					].join('\n')

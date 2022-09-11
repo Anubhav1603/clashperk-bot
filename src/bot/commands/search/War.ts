@@ -1,4 +1,11 @@
-import { EmbedBuilder, CommandInteraction, ButtonBuilder, ActionRowBuilder, escapeMarkdown, ButtonStyle } from 'discord.js';
+import {
+	EmbedBuilder,
+	CommandInteraction,
+	ButtonBuilder,
+	ActionRowBuilder,
+	escapeMarkdown,
+	ButtonStyle
+} from 'discord.js';
 import { ClanWarMember, ClanWar, WarClan } from 'clashofclans.js';
 import moment from 'moment';
 import { Collections, WarType } from '../../util/Constants.js';
@@ -149,7 +156,9 @@ export default class WarCommand extends Command {
 			},
 			{
 				name: '\u200b',
-				value: [`\u200e${escapeMarkdown(body.opponent.name)}`, `${this.count(body.opponent.members)}`].join('\n')
+				value: [`\u200e${escapeMarkdown(body.opponent.name)}`, `${this.count(body.opponent.members)}`].join(
+					'\n'
+				)
 			}
 		]);
 
@@ -163,7 +172,11 @@ export default class WarCommand extends Command {
 		}
 
 		const customID = this.client.uuid(interaction.user.id);
-		const button = new ButtonBuilder().setLabel('Download').setEmoji('📥').setStyle(ButtonStyle.Secondary).setCustomId(customID);
+		const button = new ButtonBuilder()
+			.setLabel('Download')
+			.setEmoji('📥')
+			.setStyle(ButtonStyle.Secondary)
+			.setCustomId(customID);
 
 		const msg = await interaction.editReply({
 			embeds: [embed],
@@ -266,9 +279,9 @@ export default class WarCommand extends Command {
 	private getLeaderBoard(clan: WarClan, opponent: WarClan, attacksPerMember: number) {
 		const attacksTotal = Math.floor(clan.members.length * attacksPerMember);
 		return [
-			`\`\u200e${clan.stars.toString().padStart(8, ' ')} \u200f\`\u200e \u2002 ${EMOJIS.STAR} \u2002 \`\u200e ${opponent.stars
-				.toString()
-				.padEnd(8, ' ')}\u200f\``,
+			`\`\u200e${clan.stars.toString().padStart(8, ' ')} \u200f\`\u200e \u2002 ${
+				EMOJIS.STAR
+			} \u2002 \`\u200e ${opponent.stars.toString().padEnd(8, ' ')}\u200f\``,
 			`\`\u200e${`${clan.attacks}/${attacksTotal}`.padStart(8, ' ')} \u200f\`\u200e \u2002 ${
 				EMOJIS.SWORD
 			} \u2002 \`\u200e ${`${opponent.attacks}/${attacksTotal}`.padEnd(8, ' ')}\u200f\``,

@@ -40,7 +40,10 @@ export default class RateLimitListener extends Listener {
 	}
 
 	public exec({ limit, method, route, global, hash, majorParameter, timeToReset, url }: RateLimitData) {
-		this.client.logger.warn({ timeToReset, limit, method, url, route, global, hash, majorParameter }, { label: 'RATE_LIMIT' });
+		this.client.logger.warn(
+			{ timeToReset, limit, method, url, route, global, hash, majorParameter },
+			{ label: 'RATE_LIMIT' }
+		);
 		if (url.includes(this.getWebhookId())) return;
 
 		const embed = new EmbedBuilder()

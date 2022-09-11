@@ -39,7 +39,9 @@ export default class DebugCommand extends Command {
 		];
 
 		const clans = await this.client.storage.find(interaction.guild.id);
-		const fetched: Clan[] = (await Promise.all(clans.map((en) => this.client.http.clan(en.tag)))).filter((res) => res.ok);
+		const fetched: Clan[] = (await Promise.all(clans.map((en) => this.client.http.clan(en.tag)))).filter(
+			(res) => res.ok
+		);
 
 		const cycle = await this.client.redis.hGetAll('cycle').then((data) => ({
 			clans: Number(data.CLAN_LOOP || 0),
@@ -79,14 +81,15 @@ export default class DebugCommand extends Command {
 				webhooks?.size ?? 0,
 				'',
 				'**Webhook Permissions (Temporary)**',
-				`${UEE_FOR_SLASH ? emojis.tick : emojis.cross} Use External Emojis ${UEE_FOR_SLASH ? '' : '(for @everyone)'}`,
+				`${UEE_FOR_SLASH ? emojis.tick : emojis.cross} Use External Emojis ${
+					UEE_FOR_SLASH ? '' : '(for @everyone)'
+				}`,
 				'',
 				`**Loop Time ${cycle.clans && cycle.players && cycle.wars ? '' : '(Processing...)'}**`,
 				`${emojis.none} \` ${'CLANS'.padStart(7, ' ')} \` \` ${'WARS'.padStart(7, ' ')} \` \` ${'PLAYERS'} \``,
-				`${emojis.tick} \` ${this.fixTime(cycle.clans).padStart(7, ' ')} \` \` ${this.fixTime(cycle.wars).padStart(
-					7,
-					' '
-				)} \` \` ${this.fixTime(cycle.players).padStart(7, ' ')} \``,
+				`${emojis.tick} \` ${this.fixTime(cycle.clans).padStart(7, ' ')} \` \` ${this.fixTime(
+					cycle.wars
+				).padStart(7, ' ')} \` \` ${this.fixTime(cycle.players).padStart(7, ' ')} \``,
 				'',
 				'**Clan Status and Player Loop Info**',
 				`${emojis.none} \`\u200e ${'CLAN NAME'.padEnd(
@@ -97,7 +100,8 @@ export default class DebugCommand extends Command {
 					.map((clan) => {
 						const lastRan = clan.lastRan ? ms(Date.now() - clan.lastRan.getTime()) : '...';
 						const warLog = fetched.find((res) => res.tag === clan.tag)?.isWarLogPublic;
-						const sign = clan.active && !clan.paused && clan.flag > 0 && warLog ? emojis.tick : emojis.cross;
+						const sign =
+							clan.active && !clan.paused && clan.flag > 0 && warLog ? emojis.tick : emojis.cross;
 						return `${sign} \`\u200e ${clan.name.padEnd(15, ' ')} \u200f\` \`\u200e ${lastRan.padStart(
 							3,
 							' '
