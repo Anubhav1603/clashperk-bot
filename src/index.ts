@@ -1,12 +1,25 @@
-export * from './client/Client';
-export * from './client/PollingClient';
-export * from './rest/RESTManager';
-export * from './rest/RequestHandler';
-export * from './rest/HTTPError';
-export * from './client/EventManager';
-export * from './rest/Throttler';
-export * from './util/Util';
-export * from './struct';
-export * from './types';
-export * from './util/Constants';
-export * from './util/Store';
+import 'reflect-metadata';
+
+import { fileURLToPath, URL } from 'node:url';
+import Discord from 'discord.js';
+
+class Manager extends Discord.ShardingManager {
+	public constructor() {
+		super(fileURLToPath(new URL('main.js', import.meta.url)), {
+			token: process.env.TOKEN!,
+			execArgv: ['--enable-source-maps', '--trace-warnings']
+		});
+	}
+
+	public async init() {
+		return this.spawn({ timeout: 60000 });
+	}
+}
+
+const ShardingManager = new Manager();
+
+process.on('unhandledRejection', (error) => {
+	console.error(error);
+});
+
+await ShardingManager.init();
